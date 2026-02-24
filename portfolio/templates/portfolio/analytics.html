@@ -1,0 +1,106 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}Аналітика{% endblock %}
+
+{% block extra_css %}
+<style>
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+.stat-card { border-radius: var(--radius); padding: 1.5rem; color: #fff; text-align: center; }
+.stat-num { font-size: 2.5rem; font-weight: 900; line-height: 1; }
+.stat-lbl { opacity: .85; font-size: .85rem; margin-top: .3rem; }
+.a-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+.a-card h5 { font-weight: 700; margin-bottom: 1rem; }
+.top-row { display: flex; align-items: center; gap: .8rem; padding: .5rem 0; border-bottom: 1px solid var(--border); }
+.top-row:last-child { border: none; }
+.top-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; font-size: .75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.bar-wrap { flex: 1; background: var(--border); border-radius: 20px; height: 8px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--primary), #7C3AED); transition: width 1s ease; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="section-title mb-4">📊 Аналітика</h1>
+
+  <div class="stats-grid">
+    <div class="stat-card" style="background: linear-gradient(135deg,#2563EB,#1D4ED8)">
+      <div class="stat-num">{{ total_views }}</div>
+      <div class="stat-lbl">Всього переглядів</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg,#059669,#10B981)">
+      <div class="stat-num">{{ views_30d }}</div>
+      <div class="stat-lbl">За 30 днів</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg,#7C3AED,#A855F7)">
+      <div class="stat-num">{{ total_orders }}</div>
+      <div class="stat-lbl">Всього замовлень</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg,#D97706,#F59E0B)">
+      <div class="stat-num">{{ new_orders }}</div>
+      <div class="stat-lbl">Нових замовлень</div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="a-card">
+        <h5>📈 Замовлення по місяцях</h5>
+        <canvas id="ordersChart" height="120"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="a-card">
+        <h5>🔥 Топ сторінок</h5>
+        {% for p in top_pages %}
+        <div class="top-row">
+          <div class="top-num">{{ forloop.counter }}</div>
+          <span style="flex:1;font-family:monospace;font-size:.82rem;color:var(--dark)">{{ p.path }}</span>
+          <strong style="color:var(--primary)">{{ p.cnt }}</strong>
+        </div>
+        {% empty %}<p class="text-muted small">Ще немає даних</p>{% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="a-card">
+    <h5>⭐ Найпопулярніші проєкти</h5>
+    {% for proj in top_projects %}
+    {% with max=top_projects.0.views_count %}
+    <div class="top-row" style="border-bottom: 1px solid var(--border); padding: .7rem 0;">
+      <div class="top-num">{{ forloop.counter }}</div>
+      <div style="width:200px;flex-shrink:0">
+        <strong style="font-size:.9rem">{{ proj.title }}</strong>
+        <div style="color:var(--gray);font-size:.78rem">{{ proj.get_category_display }}</div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-fill" style="width: {% if max > 0 %}{% widthratio proj.views_count max 100 %}{% else %}0{% endif %}%"></div>
+      </div>
+      <span style="width:60px;text-align:right;color:var(--gray);font-size:.85rem">👁 {{ proj.views_count }}</span>
+    </div>
+    {% endwith %}
+    {% empty %}<p class="text-muted small">Немає даних</p>{% endfor %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('ordersChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ chart_labels|safe }},
+    datasets: [{
+      label: 'Замовлення',
+      data: {{ chart_data|safe }},
+      backgroundColor: 'rgba(37,99,235,.15)',
+      borderColor: 'rgba(37,99,235,1)',
+      borderWidth: 2,
+      borderRadius: 8,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+  }
+});
+</script>
+{% endblock %}

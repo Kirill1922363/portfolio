@@ -1,0 +1,12 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}Успіх{% endblock %}
+{% block content %}
+<div class="container py-5 text-center" style="min-height:60vh;display:flex;align-items:center;justify-content:center">
+  <div>
+    <div style="font-size:4rem;margin-bottom:1.5rem">🎉</div>
+    <h2>Запит надіслано!</h2>
+    <p class="text-muted">Я отримав твоє замовлення і зв'яжусь найближчим часом для обговорення деталей.</p>
+    <a href="{% url 'home' %}" class="btn-primary-custom mt-3">На головну</a>
+  </div>
+</div>
+{% endblock %}

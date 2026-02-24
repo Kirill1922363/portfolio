@@ -1,0 +1,96 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}Блог{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero { padding: 4rem 0 2rem; background: linear-gradient(135deg, #F0F7FF, #EFF6FF); }
+.blog-grid { display: grid; grid-template-columns: 1fr 280px; gap: 2rem; }
+@media(max-width:768px) { .blog-grid { grid-template-columns: 1fr; } }
+.post-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 1.5rem; transition: transform .3s, box-shadow .3s;
+}
+.post-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.post-cover { height: 220px; overflow: hidden; background: linear-gradient(135deg, #EFF6FF, #F5F3FF); display:flex;align-items:center;justify-content:center;font-size:4rem; }
+.post-cover img { width:100%; height:100%; object-fit:cover; }
+.post-body { padding: 1.5rem; }
+.post-meta { display: flex; gap: 1rem; color: var(--gray); font-size: .82rem; margin-bottom: .6rem; }
+.post-body h2 { font-size: 1.2rem; margin-bottom: .5rem; }
+.post-body h2 a { color: var(--dark); text-decoration: none; }
+.post-body h2 a:hover { color: var(--primary); }
+.post-excerpt { color: var(--gray); font-size: .9rem; line-height: 1.6; }
+.post-footer { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; }
+.tag-pill { background: #EFF6FF; color: var(--primary); padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 600; text-decoration: none; margin: .2rem; display:inline-block; }
+.tag-pill:hover, .tag-pill.active { background: var(--primary); color: #fff; }
+.sidebar-widget { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem; margin-bottom: 1rem; }
+.sidebar-widget h5 { font-weight: 700; margin-bottom: 1rem; font-size: .95rem; }
+.read-more { color: var(--primary); font-weight: 600; text-decoration: none; font-size: .9rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <h1 class="section-title">✍️ Блог розробника</h1>
+    <p class="section-subtitle mb-0">Нотатки про Django, Python та шлях у IT</p>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="blog-grid">
+      <div>
+        {% for post in posts %}
+        <article class="post-card">
+          <div class="post-cover">
+            {% if post.cover %}<img src="{{ post.cover.url }}" alt="{{ post.title }}">{% else %}📝{% endif %}
+          </div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span>📅 {{ post.created_at|date:"d.m.Y" }}</span>
+              <span>👁 {{ post.views }}</span>
+            </div>
+            <h2><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h2>
+            <p class="post-excerpt">{{ post.excerpt }}</p>
+            <div class="post-footer">
+              <div>{% for t in post.tags.all %}<a href="?tag={{ t.slug }}" class="tag-pill">{{ t.name }}</a>{% endfor %}</div>
+              <a href="{% url 'blog_detail' post.slug %}" class="read-more">Читати →</a>
+            </div>
+          </div>
+        </article>
+        {% empty %}
+        <div class="text-center py-5 text-muted">
+          <div style="font-size:3rem;margin-bottom:1rem">📝</div>
+          <h4>Статей ще немає</h4>
+          <p>Перші статті з'являться незабаром!</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <aside>
+        {% if tags %}
+        <div class="sidebar-widget">
+          <h5>🏷 Теги</h5>
+          {% for tag in tags %}
+          <a href="?tag={{ tag.slug }}" class="tag-pill {% if active_tag and active_tag.slug == tag.slug %}active{% endif %}">
+            {{ tag.name }} ({{ tag.cnt }})
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if active_tag %}
+        <div class="sidebar-widget">
+          <p class="mb-1 small">Фільтр: <strong>{{ active_tag.name }}</strong></p>
+          <a href="{% url 'blog_list' %}" style="color:#dc3545;font-size:.85rem">✕ Скинути</a>
+        </div>
+        {% endif %}
+        <div class="sidebar-widget">
+          <h5>💬 Є що сказати?</h5>
+          <p class="text-muted small">Знайшов помилку або маєш запитання? Напиши мені!</p>
+          <a href="{% url 'contact' %}" class="btn-primary-custom" style="font-size:.85rem;padding:.5rem 1rem">Написати</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

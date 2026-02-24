@@ -1,0 +1,119 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.detail-hero { padding: 4rem 0; background: linear-gradient(135deg, #F0F7FF, #EFF6FF); }
+.detail-img {
+  height: 350px; border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(135deg, #EFF6FF, #F5F3FF);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 6rem; box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+}
+.detail-img img { width: 100%; height: 100%; object-fit: cover; }
+.info-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem;
+}
+.info-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gray); margin-bottom: .4rem; }
+.related-card {
+  border-radius: 10px; border: 1px solid var(--border); padding: 1rem;
+  text-decoration: none; color: var(--dark); display: block;
+  transition: border-color .2s, transform .2s;
+}
+.related-card:hover { border-color: var(--primary); transform: translateY(-2px); color: var(--dark); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="detail-hero">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-3">
+        <li class="breadcrumb-item"><a href="{% url 'projects' %}">Проєкти</a></li>
+        <li class="breadcrumb-item active">{{ project.title }}</li>
+      </ol>
+    </nav>
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-7">
+        <div class="detail-img">
+          {% if project.image %}<img src="{{ project.image.url }}" alt="{{ project.title }}">
+          {% elif project.category == 'django' %}🌐
+          {% elif project.category == 'frontend' %}🎨
+          {% elif project.category == 'python' %}🐍
+          {% else %}💡{% endif %}
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <span class="badge-tech mb-2 d-inline-block">{{ project.get_category_display }}</span>
+        <h1 class="h2 mb-3">{{ project.title }}</h1>
+        <p style="color: var(--gray)">{{ project.description }}</p>
+
+        <div class="mb-3">
+          {% for tech in project.tech_list %}
+          <span class="badge-tech me-1 mb-1">{{ tech }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          {% if project.github_url %}
+          <a href="{{ project.github_url }}" target="_blank" class="btn-primary-custom">
+            <i class="fab fa-github me-1"></i> GitHub
+          </a>
+          {% endif %}
+          {% if project.live_url %}
+          <a href="{{ project.live_url }}" target="_blank" class="btn-outline-custom">
+            <i class="fas fa-external-link-alt me-1"></i> Живий сайт
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="info-card">
+          <div class="info-label">Про проєкт</div>
+          <p style="color: var(--gray)">{{ project.description }}</p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="info-card">
+          <div class="info-label">Деталі</div>
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span style="color:var(--gray)">Категорія</span>
+            <strong>{{ project.get_category_display }}</strong>
+          </div>
+          <div class="d-flex justify-content-between py-2 border-bottom">
+            <span style="color:var(--gray)">Дата</span>
+            <strong>{{ project.created_at|date:"d.m.Y" }}</strong>
+          </div>
+          <div class="d-flex justify-content-between py-2">
+            <span style="color:var(--gray)">Перегляди</span>
+            <strong>👁 {{ project.views_count }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if related %}
+    <h3 class="mt-5 mb-3">Схожі проєкти</h3>
+    <div class="row g-3">
+      {% for p in related %}
+      <div class="col-sm-4">
+        <a href="{% url 'project_detail' p.pk %}" class="related-card">
+          <div class="small text-primary fw-bold mb-1">{{ p.get_category_display }}</div>
+          <strong>{{ p.title }}</strong>
+          <div class="mt-1">{% for t in p.tech_list %}<span class="badge-tech me-1">{{ t }}</span>{% endfor %}</div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

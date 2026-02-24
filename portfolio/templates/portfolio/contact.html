@@ -1,0 +1,91 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}Контакти{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero { padding: 4rem 0 2rem; background: linear-gradient(135deg, #F0F7FF, #EFF6FF); }
+.contact-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; }
+.form-inp {
+  display: block; width: 100%; padding: .75rem 1rem;
+  border: 2px solid var(--border); border-radius: 10px; margin-bottom: 1rem;
+  font-size: .95rem; outline: none; transition: border-color .2s;
+}
+.form-inp:focus { border-color: var(--primary); }
+.contact-info-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+.contact-icon { width: 44px; height: 44px; border-radius: 10px; background: #EFF6FF; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.success-box { background: #F0FDF4; border: 2px solid #BBF7D0; border-radius: var(--radius); padding: 2rem; text-align: center; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <h1 class="section-title">Зв'язатись зі мною</h1>
+    <p class="section-subtitle mb-0">Є проєкт або вакансія? Напиши — відповім протягом доби!</p>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7">
+        {% if sent %}
+        <div class="success-box">
+          <div style="font-size: 3rem; margin-bottom: 1rem">✅</div>
+          <h3>Повідомлення надіслано!</h3>
+          <p class="text-muted">Я отримав твій лист і відповім найближчим часом. Дякую!</p>
+          <a href="{% url 'home' %}" class="btn-primary-custom mt-2">На головну</a>
+        </div>
+        {% else %}
+        <div class="contact-card">
+          <h3 class="mb-4">Написати мені</h3>
+          <form method="post">
+            {% csrf_token %}
+            <input class="form-inp" type="text"  name="name"    placeholder="Ваше ім'я *" required>
+            <input class="form-inp" type="email" name="email"   placeholder="Email *" required>
+            <input class="form-inp" type="text"  name="subject" placeholder="Тема повідомлення">
+            <textarea class="form-inp" name="message" rows="5"  placeholder="Ваше повідомлення *" required></textarea>
+            <button type="submit" class="btn-primary-custom w-100" style="border:none; padding:.85rem">Надіслати повідомлення</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-5">
+        <h3 class="mb-4">Контактна інформація</h3>
+        <div class="contact-info-item">
+          <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <div class="fw-bold small">Email</div>
+            <a href="mailto:your@email.com" style="color: var(--primary)">your@email.com</a>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon"><i class="fab fa-telegram"></i></div>
+          <div>
+            <div class="fw-bold small">Telegram</div>
+            <a href="https://t.me/yourusername" style="color: var(--primary)" target="_blank">@yourusername</a>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon"><i class="fab fa-github"></i></div>
+          <div>
+            <div class="fw-bold small">GitHub</div>
+            <a href="https://github.com/yourusername" style="color: var(--primary)" target="_blank">github.com/yourusername</a>
+          </div>
+        </div>
+        <div class="contact-info-item" style="border:none">
+          <div class="contact-icon"><i class="fab fa-linkedin"></i></div>
+          <div>
+            <div class="fw-bold small">LinkedIn</div>
+            <a href="#" style="color: var(--primary)" target="_blank">linkedin.com/in/yourusername</a>
+          </div>
+        </div>
+        <div class="mt-4 p-3" style="background: var(--light); border-radius: 10px;">
+          <div class="fw-bold mb-1">⏱ Час відповіді</div>
+          <p class="text-muted small mb-0">Зазвичай відповідаю протягом 24 годин у будні дні.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

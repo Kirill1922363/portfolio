@@ -1,0 +1,81 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.post-hero { padding: 4rem 0; background: linear-gradient(135deg, #F0F7FF, #EFF6FF); }
+.post-content-wrap { max-width: 720px; margin: 0 auto; }
+.post-cover-full { border-radius: var(--radius); overflow: hidden; max-height: 400px; margin-bottom: 2rem; }
+.post-cover-full img { width: 100%; object-fit: cover; }
+.post-body { font-size: 1.05rem; line-height: 1.85; color: #374151; }
+.post-body h2 { font-size: 1.5rem; margin: 2rem 0 1rem; }
+.post-body p  { margin-bottom: 1.2rem; }
+.post-body pre { background: var(--dark); color: #cdd6f4; border-radius: 10px; padding: 1.2rem; overflow-x: auto; font-size: .88rem; margin-bottom: 1.2rem; }
+.post-body code { background: #F3F4F6; border-radius: 4px; padding: .15rem .4rem; font-size: .9em; }
+.post-body pre code { background: none; padding: 0; }
+.comment-card { background: var(--light); border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: .8rem; }
+.comment-header { display: flex; justify-content: space-between; margin-bottom: .3rem; }
+.form-inp { display: block; width: 100%; padding: .7rem 1rem; border: 2px solid var(--border); border-radius: 10px; margin-bottom: .8rem; font-size: .95rem; outline: none; transition: border-color .2s; }
+.form-inp:focus { border-color: var(--primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="post-hero">
+  <div class="container post-content-wrap">
+    <a href="{% url 'blog_list' %}" style="color:var(--gray);text-decoration:none;font-size:.9rem">← Назад до блогу</a>
+    <div class="mt-3 mb-2">
+      {% for t in post.tags.all %}<a href="{% url 'blog_list' %}?tag={{ t.slug }}" class="badge-tech me-1" style="text-decoration:none">{{ t.name }}</a>{% endfor %}
+    </div>
+    <h1 class="mt-2">{{ post.title }}</h1>
+    <div class="d-flex gap-3 mt-2" style="color:var(--gray);font-size:.85rem">
+      <span>📅 {{ post.created_at|date:"d F Y" }}</span>
+      <span>👁 {{ post.views }} переглядів</span>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container post-content-wrap">
+    {% if post.cover %}
+    <div class="post-cover-full">
+      <img src="{{ post.cover.url }}" alt="{{ post.title }}">
+    </div>
+    {% endif %}
+
+    <div class="post-body">{{ post.content|linebreaks }}</div>
+
+    <hr class="my-5">
+
+    <!-- КОМЕНТАРІ -->
+    <h4>💬 Коментарі {% if comments %}({{ comments.count }}){% endif %}</h4>
+    <div class="mt-3 mb-4">
+      {% for c in comments %}
+      <div class="comment-card">
+        <div class="comment-header">
+          <strong>{{ c.name }}</strong>
+          <span style="color:var(--gray);font-size:.82rem">{{ c.created_at|date:"d.m.Y" }}</span>
+        </div>
+        <p class="mb-0" style="color:#374151">{{ c.text }}</p>
+      </div>
+      {% empty %}
+      <p class="text-muted">Поки коментарів немає. Будь першим!</p>
+      {% endfor %}
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem">
+      <h5 class="mb-3">Залишити коментар</h5>
+      <form method="post">
+        {% csrf_token %}
+        <div class="row g-2 mb-2">
+          <div class="col-sm-6"><input class="form-inp" type="text"  name="name"  placeholder="Ім'я *" required style="margin-bottom:0"></div>
+          <div class="col-sm-6"><input class="form-inp" type="email" name="email" placeholder="Email *" required style="margin-bottom:0"></div>
+        </div>
+        <textarea class="form-inp" name="text" rows="4" placeholder="Ваш коментар *" required></textarea>
+        <button type="submit" class="btn-primary-custom" style="border:none">Відправити</button>
+        <small class="text-muted ms-2">Коментар з'явиться після модерації</small>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

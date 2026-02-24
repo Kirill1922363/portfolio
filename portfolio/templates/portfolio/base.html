@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}DevPortfolio{% endblock %} | Ім'я Прізвище</title>
+  <meta name="description" content="Junior Python/Django розробник — портфоліо проєктів та послуги">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary:   #2563EB;
+      --primary-d: #1D4ED8;
+      --dark:      #0F172A;
+      --gray:      #64748B;
+      --light:     #F8FAFC;
+      --border:    #E2E8F0;
+      --radius:    14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: var(--dark);
+      line-height: 1.7;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+
+    /* ── NAVBAR ────────────────────────── */
+    .navbar {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: .9rem 0;
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--primary) !important;
+    }
+
+    .nav-link {
+      color: var(--dark) !important;
+      font-weight: 500;
+      padding: .4rem .9rem !important;
+      border-radius: 8px;
+      transition: background .2s, color .2s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: #EFF6FF;
+      color: var(--primary) !important;
+    }
+
+    .nav-cta {
+      background: var(--primary);
+      color: #fff !important;
+      padding: .45rem 1.1rem !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--primary-d) !important;
+      color: #fff !important;
+    }
+
+    /* ── FOOTER ────────────────────────── */
+    footer {
+      background: var(--dark);
+      color: #94A3B8;
+      padding: 2.5rem 0;
+      margin-top: 5rem;
+    }
+
+    footer a { color: #94A3B8; text-decoration: none; }
+    footer a:hover { color: #fff; }
+
+    .footer-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .social-links a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: #94A3B8; margin-right: .4rem;
+      transition: background .2s, color .2s;
+    }
+
+    .social-links a:hover { background: var(--primary); color: #fff; }
+
+    /* ── УТИЛІТИ ───────────────────────── */
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: .5rem;
+    }
+
+    .section-subtitle {
+      color: var(--gray);
+      margin-bottom: 2.5rem;
+    }
+
+    .badge-tech {
+      background: #EFF6FF;
+      color: var(--primary);
+      border-radius: 6px;
+      padding: .2rem .6rem;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+
+    /* ── MESSAGES ──────────────────────── */
+    .messages-container {
+      position: fixed; top: 80px; right: 1rem; z-index: 200; width: 320px;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      &lt;Dev/&gt;
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"     href="{% url 'home' %}">Головна</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"    href="{% url 'about' %}">Про мене</a></li>
+        <li class="nav-item"><a class="nav-link {% if 'project' in request.resolver_match.url_name %}active{% endif %}"  href="{% url 'projects' %}">Проєкти</a></li>
+        <li class="nav-item"><a class="nav-link {% if 'blog' in request.resolver_match.url_name %}active{% endif %}"     href="{% url 'blog_list' %}">Блог</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'pricing' %}active{% endif %}"  href="{% url 'pricing' %}">Послуги</a></li>
+        <li class="nav-item"><a class="nav-link nav-cta"                                                                 href="{% url 'contact' %}">Зв'язатись</a></li>
+        {% if user.is_staff %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'analytics' %}">📊</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- MESSAGES -->
+<div class="messages-container">
+  {% for msg in messages %}
+  <div class="alert alert-{{ msg.tags }} alert-dismissible fade show shadow-sm" role="alert">
+    {{ msg }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- CONTENT -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-3 mb-md-0">
+        <div class="footer-brand mb-1">&lt;Dev/&gt;</div>
+        <small>Junior Python/Django розробник</small>
+      </div>
+      <div class="col-md-4 text-center mb-3 mb-md-0">
+        <div class="social-links">
+          <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" title="Telegram"><i class="fab fa-telegram"></i></a>
+        </div>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <small>© {% now "Y" %} DevPortfolio. Зроблено з ❤️ та Django</small>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
